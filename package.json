@@ -7,6 +7,7 @@
     "socket.io": "^2.2.0"
   },
   "main": "index.js",
+  "styles":"styles.css",
   "scripts": {
     "start":"node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
