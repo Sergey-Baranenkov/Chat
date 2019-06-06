@@ -6,7 +6,7 @@
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
       function launchChat() {
-        const socket = io();
+        const socket = io(); 
         $('form').submit(function(e){
           e.preventDefault(); // предотвращает перезагрузку страницы
           socket.emit('chat message', $('#m').val()); //получаем сообщение из поля
