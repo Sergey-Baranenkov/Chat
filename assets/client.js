@@ -68,8 +68,8 @@ function reglog(){
         const captchaValue=$('.captchaInput').val();
         socket.emit('validateCaptcha',captchaValue);
       });
-      socket.on('validateCaptcha',function(res){
-        alert(res);
+      socket.on('Successful validation',function(){
+        $('.form,.pen-footer').remove();
       });
       socket.emit('registration form',{'login':registerUsername.val(),
                                        'password':registerPassword.val(),

@@ -54,16 +54,17 @@ MongoClient.connect(url, function(err,db){
             socket.emit('createCaptcha',createCaptcha());
             socket.on('validateCaptcha',function(userCaptcha){
               if(userCaptcha==code){
-                socket.emit('validateCaptcha',"axuenno");
+                socket.emit("Successful validation");
+                messagesCollection.find().toArray().then((docs)=>{
+                  socket.emit("chatHistory",docs);
+                });
               }else{
                 socket.emit('createCaptcha',createCaptcha());
               }
 
 
             });
-             //messagesCollection.find().toArray().then((docs)=>{
-               //socket.emit("chatHistory",docs);
-            // });
+
           }
         });
     })
