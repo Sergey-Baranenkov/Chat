@@ -1,35 +1,70 @@
 <html>
   <head>
-    <link  href="./assets/styles.css" rel="stylesheet" type="text/css">
+    <link  href="./assets/css/style.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+    <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons'>
     <title>Socket.IO chat</title>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="./assets/client.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-    <script>
-      function launchChat() {
-        const socket = io(); 
-        $('form').submit(function(e){
-          e.preventDefault(); // предотвращает перезагрузку страницы
-          socket.emit('chat message', $('#m').val()); //получаем сообщение из поля
-          $('#m').val(''); //очищаем инпут
-          return false;
-        });
-
-        socket.on('chat message', function(msg){
-          $('#messages').append($('<li>').text(msg));
-        });
-
-        socket.on('chatHistory', function(data){
-          $('#messages').find('li').remove();
-          $.each(data, function(){
-            $('#messages').append($('<li>').text(this.text));//добавляем сообщения из базы данных
-          });
-        });
-      };
-    </script>
   </head>
-  <body onload="launchChat()">
+  <body onload="reglog()">
+    <div class="form">
+      <div class="form-toggle"></div>
+      <div class="form-panel one">
+        <div class="form-header">
+          <h1>Welcome to our chat!</h1>
+        </div>
+        <div class="form-content">
+          <form>
+            <div class="form-group">
+              <label for="username">Username</label>
+              <input type="text" id="username" name="loginUsername" required="required"/>
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" id="password" name="loginPassword" required="required"/>
+            </div>
+            <div class="form-group">
+              <button class="loginButton" type="submit">Log In</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="form-panel two">
+        <div class="form-header">
+          <h1>Register Account</h1>
+        </div>
+        <div class="form-content regContent">
+          <form class="regForm">
+            <div class="form-group">
+              <label for="username">Username</label>
+              <input type="text" id="username" class="regfield" name="registerUsername" required="required"/>
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" id="password"  class="regfield" name="registerPassword" required="required"/>
+            </div>
+            <div class="form-group">
+              <label for="cpassword">Confirm Password</label>
+              <input type="password" id="cpassword"  class="regfield" name="registerCpassword" required="required"/>
+            </div>
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input type="email" id="email"  class="regfield" name="registerEmail" required="required"/>
+            </div>
+            <div class="form-group">
+              <button class="registerButton"  type="submit">Register</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="pen-footer">
+    </div>
+
     <ul id="messages"></ul>
-    <form action="">
+    <form id="chatForm" action="">
       <input id="m" autocomplete="off" /><button>Send</button>
     </form>
   </body>

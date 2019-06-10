@@ -1,0 +1,47 @@
+function reglog(){
+  const socket = io();
+  const panelOne = $('.form-panel.two').height(),
+  panelTwo = $('.form-panel.two')[0].scrollHeight;
+
+  $('.form-panel.two').not('.form-panel.two.active').on('click', function(e) {
+    $('.form-toggle').addClass('visible');
+    $('.form-panel.one').addClass('hidden');
+    $('.form-panel.two').addClass('active');
+    $('.form').animate({
+      'height': panelTwo
+      }, 200);
+    });
+
+    $('.form-toggle').on('click', function(e) {
+    $(this).removeClass('visible');
+    $('.form-panel.one').removeClass('hidden');
+    $('.form-panel.two').removeClass('active');
+    $('.form').animate({
+      'height': panelOne
+      }, 200);
+  });
+  launchChat(socket);
+}
+
+
+function launchChat(socket) {
+  $('#chatForm').submit(function(e){
+    e.preventDefault(); // предотвращает перезагрузку страницы
+    socket.emit('chat message', $('#m').val()); //получаем сообщение из поля
+    $('#m').val(''); //очищаем инпут
+    return false;
+  });
+
+  socket.on('chat message', function(msg){
+    $('#messages').append($('<li>').text(msg));
+  });
+
+  socket.on('chatHistory', function(data){
+    $('#messages').find('li').remove();
+    $.each(data, function(){
+      $('#messages').append($('<li>').text(this.text));//добавляем сообщения из базы данных
+    });
+  });
+
+
+};
