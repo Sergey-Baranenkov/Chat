@@ -30,7 +30,7 @@ MongoClient.connect(url, function(err,db){
             if(has.login==form.login)socket.send('Sorry, but this username is already reserved :(');
             else if(has.Email==form.Email)socket.send('Sorry, but this Email is already reserved :(');
           }else{
-
+            socket.emit("Successful registration");
             let code;
             function createCaptcha() {
               let charsArray =
@@ -54,6 +54,9 @@ MongoClient.connect(url, function(err,db){
             socket.emit('createCaptcha',createCaptcha());
             socket.on('validateCaptcha',function(userCaptcha){
               if(userCaptcha==code){
+                 usersCollection.insertOne({login:form.login,
+                                            password:form.password,
+                                            Email:form.Email});
                 socket.emit("Successful validation");
                 messagesCollection.find().toArray().then((docs)=>{
                   socket.emit("chatHistory",docs);
@@ -68,9 +71,6 @@ MongoClient.connect(url, function(err,db){
           }
         });
     })
-  //  usersCollection.insertOne({login:form.login,
-                              // password:form.password,
-                              // Email:form.Email});
   });
 })
 app.get('/', function(req, res){

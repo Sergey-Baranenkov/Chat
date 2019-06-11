@@ -20,7 +20,7 @@ function reglog(){
   const registerPassword = $('[name="registerPassword"]');
   const registerCpassword = $('[name="registerCpassword"]');
   const registerEmail = $('[name="registerEmail"]');
-
+  const regfields=$(".regfield");//
 
   $('.form-panel.two').not('.form-panel.two.active').on('click', function(e) {
     $('.form-toggle').addClass('visible');
@@ -39,56 +39,55 @@ function reglog(){
       'height': panelOne
       }, 200);
   });
-  $('.registerButton').click(function(e){
-      e.preventDefault();
-      $('.regForm').find('.errormes').remove();
-      const regfields=$(".regfield");
-      regfields.each(function(_,item){
-        $(item).css("background",($(item).val()=="")?"repeating-linear-gradient(125deg,rgba(255, 0, 0, 0.3), rgba(255, 255, 255, 0.3),rgba(255, 0, 0, 0.3) 5px)":"rgba(0, 0, 0, 0.1)");
-      });
-      if (registerPassword.val()!=registerCpassword.val()){
-        printError("Passwords do not match");
+    $('.registerButton').click(function(e){
+        e.preventDefault();
+        $('.regForm').find('.errormes').remove();
+        regfields.each(function(_,item){
+          $(item).css("background",($(item).val()=="")?"repeating-linear-gradient(125deg,rgba(255, 0, 0, 0.3), rgba(255, 255, 255, 0.3),rgba(255, 0, 0, 0.3) 5px)":"rgba(0, 0, 0, 0.1)");
+        });
+        if (registerPassword.val()!=registerCpassword.val()){
+          printError("Passwords do not match");
+        }
+        else if(registerUsername.val()&&registerEmail.val()){
+          socket.emit('registration form',{'login':registerUsername.val(),
+                                           'password':registerPassword.val(),
+                                           'Email':registerEmail.val()
+          });
+          socket.on('Successful registration',function(){
+            $('.registerButton').remove();
+            $(".regfield").each(function(_,item){
+              $(item).css("background","repeating-linear-gradient(125deg,rgba(36, 96, 44, 0.5), rgba(255, 255, 255, 0.3),rgba(36, 96, 44, 0.5) 5px)");
+              $(item).prop("readOnly",true);
+            });
+            document.querySelector('.regContent').insertAdjacentHTML('beforeEnd',`<form onsubmit="validateCaptcha()">
+                                                                                    <div class="captchaContainer">
+                                                                                          <img id="captcha" src=""/>
+                                                                                          <input class="captchaInput" type="text" placeholder="Captcha" id="captchaTextBox"/>
+                                                                                          <button class="captchaButton" type="button">Submit</button>
+                                                                                    </div>
+                                                                                  </form>`);
+            $('.captchaButton').click(function(e){
+              const captchaValue=$('.captchaInput').val();
+              socket.emit('validateCaptcha',captchaValue);
+            });
+            socket.on('createCaptcha',function(canv){
+              document.getElementById("captcha").src=canv;
+            });
+            socket.on('Successful validation',function(){
+              $('.form,.pen-footer').remove();
+              launchChat(socket);
+            });
+          });
       }
-      else if(registerUsername.val()&&registerEmail.val()){
-      $(".regfield").each(function(_,item){
-        $(item).css("background","repeating-linear-gradient(125deg,rgba(36, 96, 44, 0.5), rgba(255, 255, 255, 0.3),rgba(36, 96, 44, 0.5) 5px)");
-        $(item).prop("readOnly",true);
-      });
-      $('.regForm').find('.errormes').remove();
-      $('.registerButton').remove();
-
-
-      document.querySelector('.regContent').insertAdjacentHTML('beforeEnd',`<form onsubmit="validateCaptcha()">
-                                                                              <div class="captchaContainer">
-                                                                                    <img id="captcha" src=""/>
-                                                                                    <input class="captchaInput" type="text" placeholder="Captcha" id="captchaTextBox"/>
-                                                                                    <button class="captchaButton" type="button">Submit</button>
-                                                                              </div>
-                                                                            </form>`);
-
-      $('.captchaButton').click(function(e){
-        const captchaValue=$('.captchaInput').val();
-        socket.emit('validateCaptcha',captchaValue);
-      });
-      socket.on('Successful validation',function(){
-        $('.form,.pen-footer').remove();
-      });
-      socket.emit('registration form',{'login':registerUsername.val(),
-                                       'password':registerPassword.val(),
-                                       'Email':registerEmail.val()
-      });}
-
-  });
-
-  socket.on('createCaptcha',function(canv){
-    document.getElementById("captcha").src=canv;
-  });
-
-  launchChat(socket);
+    });
 }
 
 
 function launchChat(socket) {
+  document.body.insertAdjacentHTML('beforeEnd',`<ul id="messages"></ul>
+                                                <form id="chatForm" action="">
+                                                  <input id="m" autocomplete="off" /><button>Send</button>
+                                                 </form>`);
   $('#chatForm').submit(function(e){
     e.preventDefault(); // предотвращает перезагрузку страницы
     socket.emit('chat message', $('#m').val()); //получаем сообщение из поля
