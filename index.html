@@ -1,26 +1,33 @@
 <html>
   <head>
-    <base href="/">
-  <link  href="./assets/styles.css" rel="stylesheet" type="text/css">
+    <link  href="./assets/styles.css" rel="stylesheet" type="text/css">
     <title>Socket.IO chat</title>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
-      $(function ( ) {
-        var socket = io();
+      function launchChat() {
+        const socket = io(); 
         $('form').submit(function(e){
-          e.preventDefault(); // prevents page reloading
-          socket.emit('chat message', $('#m').val());
-          $('#m').val('');
+          e.preventDefault(); // предотвращает перезагрузку страницы
+          socket.emit('chat message', $('#m').val()); //получаем сообщение из поля
+          $('#m').val(''); //очищаем инпут
           return false;
         });
+
         socket.on('chat message', function(msg){
-        $('#messages').append($('<li>').text(msg));
-    });
-      });
+          $('#messages').append($('<li>').text(msg));
+        });
+
+        socket.on('chatHistory', function(data){
+          $('#messages').find('li').remove();
+          $.each(data, function(){
+            $('#messages').append($('<li>').text(this.text));//добавляем сообщения из базы данных
+          });
+        });
+      };
     </script>
   </head>
-  <body>
+  <body onload="launchChat()">
     <ul id="messages"></ul>
     <form action="">
       <input id="m" autocomplete="off" /><button>Send</button>
