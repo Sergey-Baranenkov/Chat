@@ -40,19 +40,21 @@ function reglog(){
       }, 200);
   });
   $('.registerButton').click(function(e){
-    e.preventDefault();
+      e.preventDefault();
+      $('.regForm').find('.errormes').remove();
       const regfields=$(".regfield");
       regfields.each(function(_,item){
-        $(item).css("border",($(item).val()=="")?"3px dashed rgba(164, 35, 0, 0.88)":"");
+        $(item).css("background",($(item).val()=="")?"repeating-linear-gradient(125deg,rgba(255, 0, 0, 0.3), rgba(255, 255, 255, 0.3),rgba(255, 0, 0, 0.3) 5px)":"rgba(0, 0, 0, 0.1)");
       });
       if (registerPassword.val()!=registerCpassword.val()){
-
         printError("Passwords do not match");
-        registerPassword.style.border=
-        registerCpassword.style.border=
-        "3px dashed rgba(164, 35, 0, 0.88)";
       }
       else if(registerUsername.val()&&registerEmail.val()){
+      $(".regfield").each(function(_,item){
+        $(item).css("background","repeating-linear-gradient(125deg,rgba(36, 96, 44, 0.5), rgba(255, 255, 255, 0.3),rgba(36, 96, 44, 0.5) 5px)");
+        $(item).prop("readOnly",true);
+      });
+      $('.regForm').find('.errormes').remove();
       $('.registerButton').remove();
 
 
