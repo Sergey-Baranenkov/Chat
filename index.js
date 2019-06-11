@@ -19,11 +19,35 @@ MongoClient.connect(url, function(err,db){
     socket.on('disconnect', function(){
       console.log('user disconnected');
     });
-    socket.on('chat message', function(msg){
-      messagesCollection.insertOne({text:msg});
-      io.emit('chat message', msg);
+
+    socket.on('login form',function(form,option){
+        if(form.login!=""&&form.password!=""){
+        usersCollection.findOne({'login':form.login,'password':form.password}).then((has)=>{
+            if(has!=null){
+              socket.emit("Successful validation",option);
+              socket.on('chat message', function(msg){
+                if(msg!=""){
+                  messagesCollection.insertOne({text:form.login + ': ' + msg});
+                  io.emit('chat message', form.login + ': '+msg);
+                }
+              });
+              messagesCollection.find().toArray().then((docs)=>{
+                socket.emit("chatHistory",docs);
+              });
+            }else if (option=="ls"){
+              socket.emit('needToL/R');
+            }else{
+              socket.emit('error log',"Invalid login-password combination");
+            }
+        });
+      }
     });
-    socket.on('registration form',function(form,captcha){
+
+
+
+
+
+    socket.on('registration form',function(form){
 
         usersCollection.findOne({$or:[{'login':form.login},{'Email':form.Email}]}).then((has)=>{
           if(has!=null){
@@ -58,6 +82,12 @@ MongoClient.connect(url, function(err,db){
                                             password:form.password,
                                             Email:form.Email});
                 socket.emit("Successful validation");
+                socket.on('chat message', function(msg){
+                  if(msg!=""){
+                    messagesCollection.insertOne({text:form.login + ': ' + msg});
+                    io.emit('chat message', form.login + ': '+msg);
+                  }
+                });
                 messagesCollection.find().toArray().then((docs)=>{
                   socket.emit("chatHistory",docs);
                 });

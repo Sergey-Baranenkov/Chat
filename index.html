@@ -6,66 +6,9 @@
     <title>Socket.IO chat</title>
     <script src="/socket.io/socket.io.js"></script>
     <script src="./assets/client.js"></script>
+    <script src="./assets/regform.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
   </head>
   <body onload="reglog()">
-    <div class="form">
-      <div class="form-toggle"></div>
-      <div class="form-panel one">
-        <div class="form-header">
-          <h1>Welcome to our chat!</h1>
-        </div>
-        <div class="form-content">
-          <form>
-            <div class="form-group">
-              <label for="username">Username</label>
-              <input type="text" id="username" name="loginUsername" required="required"/>
-            </div>
-            <div class="form-group">
-              <label for="password">Password</label>
-              <input type="password" id="password" name="loginPassword" required="required"/>
-            </div>
-            <div class="form-group">
-              <button class="loginButton" type="button">Log In</button>
-            </div>
-          </form>
-        </div>
-      </div>
-      <div class="form-panel two">
-        <div class="form-header">
-          <h1>Register Account</h1>
-        </div>
-        <div class="form-content regContent">
-          <form class="regForm">
-            <div class="form-group">
-              <label for="username">Username</label>
-              <input type="text" id="username" class="regfield" name="registerUsername" required="required"/>
-            </div>
-            <div class="form-group">
-              <label for="password">Password</label>
-              <input type="password" id="password"  class="regfield" name="registerPassword" required="required"/>
-            </div>
-            <div class="form-group">
-              <label for="cpassword">Confirm Password</label>
-              <input type="password" id="cpassword"  class="regfield" name="registerCpassword" required="required"/>
-            </div>
-            <div class="form-group">
-              <label for="email">Email Address</label>
-              <input type="email" id="email"  class="regfield" name="registerEmail" required="required"/>
-            </div>
-            <div class="form-group">
-              <button class="registerButton"  type="button">Register</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-    <div class="pen-footer">
-    </div>
-
-    <ul id="messages"></ul>
-    <form id="chatForm" action="">
-      <input id="m" autocomplete="off" /><button>Send</button>
-    </form>
   </body>
 </html>
