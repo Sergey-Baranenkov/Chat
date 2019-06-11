@@ -1,36 +1,14 @@
 <html>
   <head>
-    <link  href="./assets/styles.css" rel="stylesheet" type="text/css">
+    <link  href="./assets/css/style.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+    <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons'>
     <title>Socket.IO chat</title>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="./assets/client.js"></script>
+    <script src="./assets/regform.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-    <script>
-      function launchChat() {
-        const socket = io(); 
-        $('form').submit(function(e){
-          e.preventDefault(); // предотвращает перезагрузку страницы
-          socket.emit('chat message', $('#m').val()); //получаем сообщение из поля
-          $('#m').val(''); //очищаем инпут
-          return false;
-        });
-
-        socket.on('chat message', function(msg){
-          $('#messages').append($('<li>').text(msg));
-        });
-
-        socket.on('chatHistory', function(data){
-          $('#messages').find('li').remove();
-          $.each(data, function(){
-            $('#messages').append($('<li>').text(this.text));//добавляем сообщения из базы данных
-          });
-        });
-      };
-    </script>
   </head>
-  <body onload="launchChat()">
-    <ul id="messages"></ul>
-    <form action="">
-      <input id="m" autocomplete="off" /><button>Send</button>
-    </form>
+  <body onload="reglog()">
   </body>
 </html>
