@@ -99,8 +99,8 @@ function reglog(){
 
     socket.on('Successful validation',function(option){
       if (option!="ls"){
-        localStorage.setItem('superchat_login', $('[name="loginUsername"]').val());
-        localStorage.setItem('superchat_password',$('[name="loginPassword"]').val());
+        localStorage.setItem('superchat_login', $('[name="loginUsername"]').val()||$('[name="registerUsername"]').val());
+        localStorage.setItem('superchat_password',$('[name="loginPassword"]').val()||$('[name="registerPassword"]').val());
       }
       $('.form,.pen-footer').remove();
       launchChat(socket);
@@ -110,11 +110,12 @@ function reglog(){
 
 
 function launchChat(socket) {
-  document.body.insertAdjacentHTML('beforeEnd',`<ul id="messages"></ul>
+  document.body.insertAdjacentHTML('beforeEnd',`<div id="chatContainer"><div id="dialogNamesContainer"></div><div id="currentlyOnline"><h1 class="onlineSpan">Currently online:</h1></div><ul id="messages"></ul>
                                                 <div class="margin"></div>
                                                 <form id="chatForm" action="">
                                                   <input id="m" autocomplete="off" /><button>Send</button>
-                                                 </form>`);
+                                                 </form></div>`);
+  const curOnline = document.getElementById("currentlyOnline");
   $('#chatForm').submit(function(e){
     e.preventDefault(); // предотвращает перезагрузку страницы
     socket.emit('chat message', $('#m').val()); //получаем сообщение из поля
@@ -127,6 +128,22 @@ function launchChat(socket) {
     window.scrollTo(0,document.body.scrollHeight);
   });
 
+  socket.on('newOnlineUser',function(name){
+    console.log("NewUser");
+    let p = document.createElement("p");
+    p.classList.add(name);
+    p.innerHTML=name;
+    curOnline.appendChild(p);
+  });
+  socket.on("UserDisconnected",function(name){
+    let p=document.querySelector(`.${name}`);
+    curOnline.removeChild(p);
+  });
+  socket.on("onlineHistory",function(data){
+    $.each(data, function(){
+      $('#currentlyOnline').append($(`<p class="${this.user}">`).text(this.user));//добавляем сообщения из базы данных
+    });
+  });
   socket.on('chatHistory', function(data){
     $('#messages').find('li').remove();
     $.each(data, function(){
