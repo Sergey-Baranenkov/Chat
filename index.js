@@ -6,6 +6,11 @@ const io = require('socket.io')(http);
 const MongoClient = require('mongodb').MongoClient;
 const Canvas = require('canvas')
 const crypto = require('crypto');
+
+const helper = require('sendgrid').mail;
+const fromEmail = new helper.Email('passwordRecovering@superchat.ru');
+const sg = require('sendgrid')('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');
+
 app.use('/assets', express.static('assets'))
 
 const url='mongodb://localhost:27017/node_chat';
@@ -17,7 +22,6 @@ MongoClient.connect(url, function(err,db){
   const onlineCollection=database.collection('online');
 
   io.on('connection', function(socket){
-    console.log('connect '+socket.id);
 
     socket.on('disconnect', function(){
       if (socket._login){
@@ -30,6 +34,29 @@ MongoClient.connect(url, function(err,db){
           }
         });
       }
+    });
+
+    socket.on('SendToMail',function(email){
+      usersCollection.findOne({'Email':email}).then((has)=>{
+        if(has){
+            const toEmail = new helper.Email(has.Email);
+            const subject = 'SuperChat Log/Pass';
+            const content = new helper.Content('text/plain', `Do not forget them anymore :)
+                                                              login: ${has.login}
+                                                              password:${has.password}`);
+            const mail = new helper.Mail(fromEmail, subject, toEmail, content);
+            var request = sg.emptyRequest({
+            method: 'POST',
+            path: '/v3/mail/send',
+            body: mail.toJSON()
+            });
+
+            sg.API(request);
+            socket.emit("LPSended");
+        }else{
+          socket.emit('noEmail');
+        }
+      });
     });
 
     socket.on('login form',function(form,option){

@@ -1,5 +1,13 @@
 function makeform(){
   document.body.insertAdjacentHTML('afterbegin',`
+    <div class="forgotPasswordForm">
+      <div class="closeFPFButton" onclick="showForgotPasswordForm({'top':'-425px','duration':100,'easing':'swing'})">&times</div>
+      <div id="FPFcontainer" class="form-group">
+        <div class="form-header LPtoMailHeader"><h1>Enter the account Email</h1></div>
+        <label for="email" class="form-group">Email:</label>
+        <input type="email" id="LPtoMailInput" class="form-group" required="required"/><button class="LPtoMailButton">Send data to the Email</button>
+      </div>
+    </div>
     <div class="form">
       <div class="form-toggle"></div>
       <div class="form-panel one">
@@ -19,6 +27,7 @@ function makeform(){
             <div class="form-group">
               <button class="loginButton" type="button">Log In</button>
             </div>
+            <div class="forgotPassword" onclick="showForgotPasswordForm({'top':'100','duration':300,'easing':'swing'})">Forgot password?</div>
           </form>
         </div>
       </div>

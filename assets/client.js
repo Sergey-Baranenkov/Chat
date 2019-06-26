@@ -7,6 +7,16 @@ function exitButtonClick(){
   localStorage.removeItem('superchat_password');
   window.location.reload();
 }
+function showForgotPasswordForm(option){
+  $('.forgotPasswordForm').animate({
+    'top': option.top
+  }, {
+    duration: option.duration,
+    specialEasing: {
+      top: option.easing}
+    });
+  }
+
 function reglog(){
   const socket = io();
   socket.emit('login form',{'login':localStorage.getItem('superchat_login'),
@@ -14,6 +24,28 @@ function reglog(){
   },'ls');
   socket.on('needToL/R',function(){
     makeform();
+
+    $('.LPtoMailButton').on('click',function(e){
+      $('#FPFcontainer').find($('.errormes')).remove();
+      const val=$('#LPtoMailInput').val();
+      $('#LPtoMailInput').css("background",(!val)?"repeating-linear-gradient(125deg,rgba(255, 0, 0, 0.3), rgba(255, 255, 255, 0.3),rgba(255, 0, 0, 0.3) 5px)":"rgba(0, 0, 0, 0.1)");
+      if(val){
+        socket.emit("SendToMail",val);
+        console.log(val);
+      }
+    });
+
+    socket.on('noEmail',()=>printError("Mail not found",$('#FPFcontainer')));
+    socket.on('LPSended',()=>{
+      const fpcontainer=document.getElementById('FPFcontainer');
+      while (fpcontainer.children.length>1){
+        fpcontainer.removeChild(fpcontainer.lastElementChild);
+      }
+      const done=document.querySelector('.LPtoMailHeader');
+      done.innerHTML="<h1 style='color:green'>Sended! check your email</h1>";
+      done.style.position="absolute";
+      done.style.top=85;
+    });
     const panelOne = $('.form-panel.two').height(),
     panelTwo = $('.form-panel.two')[0].scrollHeight;
     const loginUsername= $('[name="loginUsername"]');
@@ -38,7 +70,7 @@ function reglog(){
       $('.form-panel.one').removeClass('hidden');
       $('.form-panel.two').removeClass('active');
       $('.form').animate({
-        'height': panelOne
+        'height': "420px"
         }, 200);
     });
 
@@ -106,10 +138,9 @@ function reglog(){
         localStorage.setItem('superchat_login', $('[name="loginUsername"]').val()||$('[name="registerUsername"]').val());
         localStorage.setItem('superchat_password',$('[name="loginPassword"]').val()||$('[name="registerPassword"]').val());
       }
-      $('.form,.pen-footer').remove();
+      $('.form,.pen-footer,.forgotPasswordForm').remove();
       launchChat(socket);
     });
-
 }
 
 
@@ -123,6 +154,8 @@ function launchChat(socket) {
                                                   <input id="m" autocomplete="off" /><button>Send</button>
                                                  </form><div class="backgr"></div></div>`);
   const curOnline = document.getElementById("currentlyOnline");
+  const messages=document.getElementById('messages');
+
   $('#chatForm').submit(function(e){
     e.preventDefault(); // предотвращает перезагрузку страницы
     socket.emit('chat message', $('#m').val()); //получаем сообщение из поля
@@ -131,8 +164,8 @@ function launchChat(socket) {
   });
 
   socket.on('chat message', function(msg){
-    document.getElementById('messages').insertAdjacentHTML('beforeEnd',`<li>${msg}</li>`);
-    window.scrollTo(0,document.body.scrollHeight);
+    messages.insertAdjacentHTML('beforeEnd',`<li>${msg}</li>`);
+    messages.scrollTo(0,messages.scrollHeight);
   });
 
   socket.on('newOnlineUser',function(name){
@@ -156,7 +189,7 @@ function launchChat(socket) {
     $.each(data, function(){
       document.getElementById('messages').insertAdjacentHTML('beforeEnd',`<li><span style="color:rgb(${this.msgColor[0]},${this.msgColor[1]},${this.msgColor[2]});font-weight:bold;">${this.Author}: </span>${this.text}</li>`);
     });
-    window.scrollTo(0,document.body.scrollHeight);
+    messages.scrollTo(0,messages.scrollHeight);
   });
 
 };

@@ -66,15 +66,58 @@ body {
 #messages{
   grid-area:messages;
   word-wrap: break-word;
+  height:674px;
+  overflow-y:auto;
 }
 #dialogNamesContainer{
   background-color:#531754;
   grid-area:dnames;
 
 }
-
-
-
+.forgotPassword{
+  margin-top:5px;
+  font-size:15px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  color:blue;
+  cursor:pointer;
+  float:right;
+}
+.forgotPasswordForm{
+  width:600px;
+  height:425px;
+  margin: 0 auto;
+  background-color:white;
+  position:absolute;
+  top:-425px;
+  left:0;
+  right:0;
+  box-sizing: border-box;
+  border-radius:5px;
+  z-index: 16;
+}
+.closeFPFButton{
+  height:50px;
+  position: absolute;
+  top:0;
+  right:0;
+  width:50px;
+  background-color:rgba(185, 63, 63, 1);
+  font-size:30px;
+  font-weight: bold;
+  border-radius:0 0 0 15px;
+  box-sizing: border-box;
+  padding: 10px 16px;
+  cursor:pointer;
+}
+#FPFcontainer{
+  display:grid;
+  position: absolute;
+  top:110px;
+  left:130px;
+  width:400px;
+}
 .captchaInput {
     padding: 12px 20px;
     display: inline-block;
@@ -110,9 +153,8 @@ body {
           font-size:20px;
           text-align:center;
           font-weight:bold;
-
+          margin-top:20px;
 }
-
 
 .overlay, .form-panel.one:before {
   position: absolute;
@@ -132,7 +174,7 @@ body {
   border-radius: 4px;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
-  margin: 100px auto 10px;
+  margin: 100px auto 0px;
   overflow: hidden;
 }
 .form-toggle {

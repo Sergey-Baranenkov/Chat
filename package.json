@@ -9,6 +9,7 @@
     "mongodb": "^3.2.6",
     "passport": "^0.4.0",
     "sass": "^1.21.0",
+    "sendgrid": "^5.2.3",
     "socket.io": "^2.2.0",
     "socketio-auth": "^0.1.1"
   },
