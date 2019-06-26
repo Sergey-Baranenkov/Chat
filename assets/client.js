@@ -2,7 +2,11 @@ function printError(mes,from){
   $(from).find('.errormes').remove();
   $(from).append($('<div class="errormes">').text(mes));
 }
-
+function exitButtonClick(){
+  localStorage.removeItem('superchat_login');
+  localStorage.removeItem('superchat_password');
+  window.location.reload();
+}
 function reglog(){
   const socket = io();
   socket.emit('login form',{'login':localStorage.getItem('superchat_login'),
@@ -110,11 +114,14 @@ function reglog(){
 
 
 function launchChat(socket) {
-  document.body.insertAdjacentHTML('beforeEnd',`<div id="chatContainer"><div id="dialogNamesContainer"></div><div id="currentlyOnline"><h1 class="onlineSpan">Currently online:</h1></div><ul id="messages"></ul>
-                                                <div class="margin"></div>
+  document.body.insertAdjacentHTML('beforeEnd',`<div id="chatContainer">
+                                                  <div id="backToLogin"><div class="backToLoginButton" onclick="exitButtonClick()">&times</div></div>
+                                                  <div id="dialogNamesContainer"></div><div id="currentlyOnline"><h1 class="onlineSpan">Currently online:</h1></div>
+                                                  <ul id="messages"></ul>
+                                                  <div class="margin"></div>
                                                 <form id="chatForm" action="">
                                                   <input id="m" autocomplete="off" /><button>Send</button>
-                                                 </form></div>`);
+                                                 </form><div class="backgr"></div></div>`);
   const curOnline = document.getElementById("currentlyOnline");
   $('#chatForm').submit(function(e){
     e.preventDefault(); // предотвращает перезагрузку страницы
@@ -124,7 +131,7 @@ function launchChat(socket) {
   });
 
   socket.on('chat message', function(msg){
-    $('#messages').append($('<li>').text(msg));
+    document.getElementById('messages').insertAdjacentHTML('beforeEnd',`<li>${msg}</li>`);
     window.scrollTo(0,document.body.scrollHeight);
   });
 
@@ -132,6 +139,7 @@ function launchChat(socket) {
     console.log("NewUser");
     let p = document.createElement("p");
     p.classList.add(name);
+    p.classList.add("onlineUser");
     p.innerHTML=name;
     curOnline.appendChild(p);
   });
@@ -141,13 +149,12 @@ function launchChat(socket) {
   });
   socket.on("onlineHistory",function(data){
     $.each(data, function(){
-      $('#currentlyOnline').append($(`<p class="${this.user}">`).text(this.user));//добавляем сообщения из базы данных
+      $('#currentlyOnline').append($(`<p class="${this.user} onlineUser">`).text(this.user));//добавляем сообщения из базы данных
     });
   });
   socket.on('chatHistory', function(data){
-    $('#messages').find('li').remove();
     $.each(data, function(){
-      $('#messages').append($('<li>').text(this.text));//добавляем сообщения из базы данных
+      document.getElementById('messages').insertAdjacentHTML('beforeEnd',`<li><span style="color:rgb(${this.msgColor[0]},${this.msgColor[1]},${this.msgColor[2]});font-weight:bold;">${this.Author}: </span>${this.text}</li>`);
     });
     window.scrollTo(0,document.body.scrollHeight);
   });

@@ -1,11 +1,10 @@
 html {
   width:  100%;
   height: 100%;
+  background-color:#531754;
 }
 
 body {
-  max-width: 1600px;
-  min-width:1200px;
   color: rgba(0, 0, 0, 0.6);
   font-family: "Roboto", sans-serif;
   font-size: 14px;
@@ -15,30 +14,63 @@ body {
 }
 
 #chatContainer{
-  border:1px dashed green;
-  grid-template-columns: 20% 80%;
+  max-width: 1600px;
+  min-width:1200px;
+  background-color: white;
   display:grid;
+  grid-template-columns: 20% 80%;
+  grid-template-rows:50px 200px 300px 1fr 50px;
   grid-template-areas:
+  "BTL messages"
   "dnames messages"
-  "online messages";
+  "online messages"
+  "backgr messages"
+  "margin margin";
 }
-
+.backgr{
+  grid-area:backgr;
+  background-color:#531754;
+}
+.margin{
+  grid-area:margin;
+  background-color:#531754;
+  height:50px;
+}
 #currentlyOnline{
-  border:2px solid red;
+  /*border:2px solid red;*/
+  margin-top:3px;
   grid-area:online;
+  background-color: #531754;
+  overflow-y:auto;
 }
 .onlineSpan{
   text-align: center;
+  padding:10px 0;
+  font-size:25px;
+  color:white;
+}
+.onlineUser{
+  padding-left:10px;
+  margin-top:10px;
+  font-size:20px;
+  color:white;
+  font-family:Arial, sans-serif;
+}
+.onlineUser:before{
+  content: "__" ;
+  margin-right:10px;
+  border-radius:100%;
+  background-color:rgb(43, 131, 70);
+  color:rgba(56, 119, 159, 0);
 }
 #messages{
   grid-area:messages;
   word-wrap: break-word;
-  border:2px dashed blue;
-
 }
 #dialogNamesContainer{
+  background-color:#531754;
   grid-area:dnames;
-  border:2px solid yellow;
+
 }
 
 
@@ -70,14 +102,10 @@ body {
 #chatForm { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
 #chatForm input { border: 0; padding: 10px; width: 90%; margin-right: .5%;}
 #chatForm button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
-#messages { list-style-type: none; margin: 0; padding: 0; }
-#messages li { padding: 5px 10px; font-size:30px; }
+#messages { list-style-type: none; margin: 0; padding: 0;}
+#messages li { padding: 5px 10px; font-size:30px;}
 #messages li:nth-child(odd) { background: #eee; }
-.margin{
-  display:block;
-  width:100%;
-  height:100px;
-}
+
 .errormes{color:rgba(247, 37, 0, 0.75);
           font-size:20px;
           text-align:center;
@@ -345,4 +373,20 @@ body {
 .cp-fab {
   background: #FFFFFF !important;
   color: #4285F4 !important;
+}
+#backToLogin{
+  grid-area:BTL;
+  height:50px;
+  background-color:#531754;
+}
+.backToLoginButton{
+  height:inherit;
+  width:50px;
+  background-color:rgba(185, 63, 63, 1);
+  font-size:30px;
+  font-weight: bold;
+  border-radius:0 0 15px 0;
+  box-sizing: border-box;
+  padding: 10px 16px;
+  cursor:pointer;
 }
