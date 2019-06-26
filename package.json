@@ -3,13 +3,19 @@
   "version": "0.0.1",
   "description": "my first socket.io app",
   "dependencies": {
+    "canvas": "^2.5.0",
+    "compass": "^0.1.1",
     "express": "^4.17.1",
-    "socket.io": "^2.2.0"
+    "mongodb": "^3.2.6",
+    "passport": "^0.4.0",
+    "sass": "^1.21.0",
+    "socket.io": "^2.2.0",
+    "socketio-auth": "^0.1.1"
   },
   "main": "index.js",
-  "styles":"styles.css",
+  "styles": "styles.css",
   "scripts": {
-    "start":"node index.js",
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

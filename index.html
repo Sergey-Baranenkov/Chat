@@ -1,10 +1,14 @@
 <html>
   <head>
-    <base href="/">
-  <link  href="./assets/styles.css" rel="stylesheet" type="text/css">
+    <link  href="./assets/css/style.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+    <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons'>
     <title>Socket.IO chat</title>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="./assets/client.js"></script>
+    <script src="./assets/regform.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<<<<<<< HEAD
     <script>
       $(function () {
         var socket = io();
@@ -19,11 +23,9 @@
     });
       });
     </script>
+=======
+>>>>>>> a711bec95735b211a8d6c5dbdf8107ebd103737c
   </head>
-  <body>
-    <ul id="messages"></ul>
-    <form action="">
-      <input id="m" autocomplete="off" /><button>Send</button>
-    </form>
+  <body onload="reglog()">
   </body>
 </html>
