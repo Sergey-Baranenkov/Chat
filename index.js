@@ -40,7 +40,7 @@ MongoClient.connect(url, function(err,db){
                 if(+has.Tab==0){
                   await function(){
                     onlineCollection.insertOne({user:form.login})
-                    io.emit('newOnlineUser',form.login);
+                    socket.broadcast.emit('newOnlineUser',form.login);
                   }();
                 }
                 await function(){
@@ -56,8 +56,8 @@ MongoClient.connect(url, function(err,db){
               socket._login=form.login;
               socket.on('chat message', function(msg){
                 if(msg!=""){
-                  messagesCollection.insertOne({text:form.login + ': ' + msg});
-                  io.emit('chat message', form.login + ': '+msg);
+                  messagesCollection.insertOne({Author:form.login,text: msg, msgColor:has.Color});
+                  io.emit('chat message', '<span style="color:rgb('+has.Color[0]+','+has.Color[1]+','+has.Color[2]+');font-weight:bold;">'+form.login+': '+'</span>'+msg);
                 }
               });
               messagesCollection.find().toArray().then((docs)=>{
@@ -65,10 +65,10 @@ MongoClient.connect(url, function(err,db){
               });
             }else if (option=="ls"){
               socket.emit('needToL/R');
+            }else{
+              socket.emit('error log',"Invalid login-password combination");
             }
         });
-      }else{
-        socket.emit('error log',"Invalid login-password combination");
       }
     });
 
@@ -106,11 +106,18 @@ MongoClient.connect(url, function(err,db){
 
             socket.emit('createCaptcha',createCaptcha());
             socket.on('validateCaptcha',function(userCaptcha){
+              let colorArray=[0,0,0];
+
+              do{
+                colorArray=[Math.floor(Math.random() *256),Math.floor(Math.random() *256),Math.floor(Math.random() *256)];
+              }while(colorArray.reduce(function(sum,a){return sum+a;},0)>600);
+
               if(userCaptcha==code){
                  usersCollection.insertOne({login:form.login,
                                             password:form.password,
                                             Email:form.Email,
-                                            Tab:0});
+                                            Tab:0,
+                                            Color:colorArray});
                 socket.emit("Successful validation");
 
 
@@ -124,8 +131,8 @@ MongoClient.connect(url, function(err,db){
 
                 socket.on('chat message', function(msg){
                   if(msg!=""){
-                    messagesCollection.insertOne({text:form.login + ': ' + msg});
-                    io.emit('chat message', form.login + ': '+msg);
+                    messagesCollection.insertOne({Author:form.login,text:msg, msgColor:colorArray});
+                    io.emit('chat message', '<span style="color:rgb('+colorArray[0]+','+colorArray[1]+','+colorArray[2]+');font-weight:bold;">'+form.login+': '+'</span>'+msg);
                   }
                 });
                 messagesCollection.find().toArray().then((docs)=>{
