@@ -4,9 +4,15 @@ const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const MongoClient = require('mongodb').MongoClient;
-const Canvas = require('canvas')
-const crypto = require('crypto');
+const Canvas = require('canvas');
+const fs = require('fs');
+const API_KEY;
 app.use('/assets', express.static('assets'))
+
+fs.readFile(__dirname+'/assets/API_KEY.txt', 'utf8', function(err, data) {
+  if (err) throw err;
+  API_KEY=data;
+});
 
 const url='mongodb://localhost:27017/node_chat';
 
@@ -16,8 +22,11 @@ MongoClient.connect(url, function(err,db){
   const usersCollection = database.collection('users');
   const onlineCollection=database.collection('online');
 
+  const helper = require('sendgrid').mail;
+  const fromEmail = new helper.Email('passwordRecovering@superchat.ru');
+  const sg = require('sendgrid')(API_KEY);
+
   io.on('connection', function(socket){
-    console.log('connect '+socket.id);
 
     socket.on('disconnect', function(){
       if (socket._login){
@@ -32,6 +41,29 @@ MongoClient.connect(url, function(err,db){
       }
     });
 
+    socket.on('SendToMail',function(email){
+      usersCollection.findOne({'Email':email}).then((has)=>{
+        if(has){
+            const toEmail = new helper.Email(has.Email);
+            const subject = 'SuperChat Log/Pass';
+            const content = new helper.Content('text/plain', `Do not forget them anymore :)
+                                                              login: ${has.login}
+                                                              password:${has.password}`);
+            const mail = new helper.Mail(fromEmail, subject, toEmail, content);
+            var request = sg.emptyRequest({
+            method: 'POST',
+            path: '/v3/mail/send',
+            body: mail.toJSON()
+            });
+
+            sg.API(request);
+            socket.emit("LPSended");
+        }else{
+          socket.emit('noEmail');
+        }
+      });
+    });
+
     socket.on('login form',function(form,option){
         if(form.login!=""&&form.password!=""){
         usersCollection.findOne({'login':form.login,'password':form.password}).then((has)=>{
@@ -40,7 +72,7 @@ MongoClient.connect(url, function(err,db){
                 if(+has.Tab==0){
                   await function(){
                     onlineCollection.insertOne({user:form.login})
-                    io.emit('newOnlineUser',form.login);
+                    socket.broadcast.emit('newOnlineUser',form.login);
                   }();
                 }
                 await function(){
@@ -56,8 +88,8 @@ MongoClient.connect(url, function(err,db){
               socket._login=form.login;
               socket.on('chat message', function(msg){
                 if(msg!=""){
-                  messagesCollection.insertOne({text:form.login + ': ' + msg});
-                  io.emit('chat message', form.login + ': '+msg);
+                  messagesCollection.insertOne({Author:form.login,text: msg, msgColor:has.Color});
+                  io.emit('chat message', '<span style="color:rgb('+has.Color[0]+','+has.Color[1]+','+has.Color[2]+');font-weight:bold;">'+form.login+': '+'</span>'+msg);
                 }
               });
               messagesCollection.find().toArray().then((docs)=>{
@@ -65,10 +97,10 @@ MongoClient.connect(url, function(err,db){
               });
             }else if (option=="ls"){
               socket.emit('needToL/R');
+            }else{
+              socket.emit('error log',"Invalid login-password combination");
             }
         });
-      }else{
-        socket.emit('error log',"Invalid login-password combination");
       }
     });
 
@@ -106,11 +138,18 @@ MongoClient.connect(url, function(err,db){
 
             socket.emit('createCaptcha',createCaptcha());
             socket.on('validateCaptcha',function(userCaptcha){
+              let colorArray=[0,0,0];
+
+              do{
+                colorArray=[Math.floor(Math.random() *256),Math.floor(Math.random() *256),Math.floor(Math.random() *256)];
+              }while(colorArray.reduce(function(sum,a){return sum+a;},0)>600);
+
               if(userCaptcha==code){
                  usersCollection.insertOne({login:form.login,
                                             password:form.password,
                                             Email:form.Email,
-                                            Tab:0});
+                                            Tab:0,
+                                            Color:colorArray});
                 socket.emit("Successful validation");
 
 
@@ -124,8 +163,8 @@ MongoClient.connect(url, function(err,db){
 
                 socket.on('chat message', function(msg){
                   if(msg!=""){
-                    messagesCollection.insertOne({text:form.login + ': ' + msg});
-                    io.emit('chat message', form.login + ': '+msg);
+                    messagesCollection.insertOne({Author:form.login,text:msg, msgColor:colorArray});
+                    io.emit('chat message', '<span style="color:rgb('+colorArray[0]+','+colorArray[1]+','+colorArray[2]+');font-weight:bold;">'+form.login+': '+'</span>'+msg);
                   }
                 });
                 messagesCollection.find().toArray().then((docs)=>{
