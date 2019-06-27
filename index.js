@@ -4,14 +4,17 @@ const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const MongoClient = require('mongodb').MongoClient;
-const Canvas = require('canvas')
-const crypto = require('crypto');
 
-const helper = require('sendgrid').mail;
-const fromEmail = new helper.Email('passwordRecovering@superchat.ru');
-const sg = require('sendgrid')('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');
+const Canvas = require('canvas');
+const fs = require('fs');
+const API_KEY;
 
 app.use('/assets', express.static('assets'))
+
+fs.readFile(__dirname+'/assets/API_KEY.txt', 'utf8', function(err, data) {
+  if (err) throw err;
+  API_KEY=data;
+});
 
 const url='mongodb://localhost:27017/node_chat';
 
@@ -20,6 +23,10 @@ MongoClient.connect(url, function(err,db){
   const messagesCollection = database.collection('messages');
   const usersCollection = database.collection('users');
   const onlineCollection=database.collection('online');
+
+  const helper = require('sendgrid').mail;
+  const fromEmail = new helper.Email('passwordRecovering@superchat.ru');
+  const sg = require('sendgrid')(API_KEY);
 
   io.on('connection', function(socket){
 
