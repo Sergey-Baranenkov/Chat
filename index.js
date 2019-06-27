@@ -7,13 +7,14 @@ const MongoClient = require('mongodb').MongoClient;
 
 const Canvas = require('canvas');
 const fs = require('fs');
-const API_KEY;
 
-app.use('/assets', express.static('assets'))
+let api_key;
+app.use('/assets', express.static('assets'));
+
 
 fs.readFile(__dirname+'/assets/API_KEY.txt', 'utf8', function(err, data) {
-  if (err) throw err;
-  API_KEY=data;
+  if (err)console.log(err);
+  api_key=data;
 });
 
 const url='mongodb://localhost:27017/node_chat';
@@ -26,7 +27,7 @@ MongoClient.connect(url, function(err,db){
 
   const helper = require('sendgrid').mail;
   const fromEmail = new helper.Email('passwordRecovering@superchat.ru');
-  const sg = require('sendgrid')(API_KEY);
+  const sg = require('sendgrid')(api_key);
 
   io.on('connection', function(socket){
 
@@ -150,7 +151,7 @@ MongoClient.connect(url, function(err,db){
                  usersCollection.insertOne({login:form.login,
                                             password:form.password,
                                             Email:form.Email,
-                                            Tab:0,
+                                            Tab:1,
                                             Color:colorArray});
                 socket.emit("Successful validation");
 
