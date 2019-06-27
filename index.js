@@ -4,10 +4,13 @@ const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const MongoClient = require('mongodb').MongoClient;
+
 const Canvas = require('canvas');
 const fs = require('fs');
+
 let api_key;
 app.use('/assets', express.static('assets'));
+
 
 fs.readFile(__dirname+'/assets/API_KEY.txt', 'utf8', function(err, data) {
   if (err)console.log(err);
